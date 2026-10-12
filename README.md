@@ -15,28 +15,35 @@ I first wrote it for my GCSE Computer Science controlled assessment, then came b
 - Scores saved to a file, with a top 10 leaderboard
 
 ## How to run
-
+ 
 You need Python 3.
-
-```
+ 
+```bash
+git clone git@github.com:playfu1-d0ubt/song-quiz.git
+cd song-quiz
 python3 song_quiz.py
 ```
-
+ 
 | File | What it does |
 | --- | --- |
 | `song_quiz.py` | The game |
 | `Quiz.txt` | One song per line as `song:artist`. Swap in your own |
 | `users.txt` | Created automatically when the first account is made (`name:username:password`) |
 | `Score.txt` | Created automatically after the first game (`name:score:percent`) |
-
-## How it works
-
-The program is split into small functions: `login_menu`, `main_menu`, `new_login`, `login`, `quiz`, `leaderboard` and a few helpers. I planned it in pseudocode first, then built and tested it one function at a time.
-
-## Testing
-
+ 
+## Limitations
+ 
+- Console only, with no graphical interface.
+- Logins and scores are stored in plain text files, not a database or JSON.
+- Legacy plain text passwords are still accepted for older accounts.
+- One difficulty level and one song list, with a fixed number of rounds.
+- No automated tests yet. I tested by hand with the table below.
+## What I learned
+ 
+### Testing
+ 
 I planned tests for each input using normal, boundary and erroneous data:
-
+ 
 | What I tested | Normal | Boundary | Erroneous |
 | --- | --- | --- | --- |
 | Username | Bon15 | james7 | karen |
@@ -45,15 +52,16 @@ I planned tests for each input using normal, boundary and erroneous data:
 | Name | Bon | james | 7 |
 | Age | 12 | - | James |
 | Guess | Half-life | - | 12 |
-
-Bugs I found and fixed along the way:
-
+ 
+### Bugs I found and fixed
+ 
 - A missing `int()` around menu input, so choices never matched
 - An attribute error caused by a mistake with `strip`
 - Pressing Enter twice kept repeating the last username
 - Login only worked for a few lines of the user file, and retries failed
-
-## What I'd do next
-
+### What I'd do next
+ 
 - Add more song categories or difficulty levels
 - Let players pick how many rounds to play
+- Move logins and the leaderboard to JSON
+- Add `pytest` tests for the scoring and input-checking functions
