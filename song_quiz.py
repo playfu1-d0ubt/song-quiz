@@ -6,12 +6,42 @@ players in users.txt (name:username:password) and results in
 Score.txt (name:score:percent).
 """
 import random
+import os
+import hashlib
 
 USERS_FILE = "users.txt"
 QUIZ_FILE = "Quiz.txt"
 SCORE_FILE = "Score.txt"
 MAX_ROUNDS = 10
 
+def encode_password(password):
+    """Return a hashed version of the password, including its salt."""
+    salt = os.urandom(16)
+    hashed_password = hashlib.scrypt(password.encode(), salt=salt, n=16384, r=8, p=1)
+    return f"{salt.hex()}:{hashed_password.hex()}"  # store salt and hash together
+
+
+def verify_password(password, stored_password):
+    """Check whether the supplied password matches the stored hash."""
+    if not stored_password:
+        return False
+
+    try:
+        salt_hex, hash_hex = stored_password.split(":", 1)
+    except ValueError:
+        # Legacy/plain-text passwords still work for older records.
+        return password == stored_password
+
+    try:
+        salt = bytes.fromhex(salt_hex)
+    except ValueError:
+        return False
+
+    expected_hash = hashlib.scrypt(password.encode(), salt=salt, n=16384, r=8, p=1).hex()
+    if expected_hash == hash_hex:
+        return True
+    else:
+        return False
 
 def read_lines(filename):
     """Return the non-empty lines of a file, or [] if it doesn't exist yet."""
@@ -82,9 +112,9 @@ def new_login():
     while len(password) < 8:
         print("Invalid - too short")
         password = input("Make a password (8+ characters): ")
-
+    hashed_password = encode_password(password)
     with open(USERS_FILE, "a") as login_file:
-        login_file.write(f"\n{name}:{user}:{password}")
+        login_file.write(f"\n{name}:{user}:{hashed_password}")
     print("Account created - you can now log in.")
 
 
@@ -96,7 +126,7 @@ def login():
         password = input("Password: ")
         for line in users:
             name, user, stored_password = line.split(":", 2)
-            if username == user and password == stored_password:
+            if username == user and verify_password(password, stored_password):
                 print(f"Welcome {name}")
                 return name
         print("Wrong username or password.")
