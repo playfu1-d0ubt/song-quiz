@@ -7,6 +7,7 @@ I first wrote it for my GCSE Computer Science controlled assessment, then came b
 ## Features
 
 - Login system with new accounts (username = first 4 letters of your name + your age)
+- Passwords are hashed, however compatibility with legacy plain text passwords remains
 - Songs and artists loaded from a text file you can edit
 - Shows the first letter of the title, with blanks for the rest
 - Two guesses per song: 3 points for a first-time answer, 1 point for a second
@@ -54,6 +55,5 @@ Bugs I found and fixed along the way:
 
 ## What I'd do next
 
-- Passwords are stored as plain text. That is fine for learning but not for a real app, so the next step is hashing them
 - Add more song categories or difficulty levels
 - Let players pick how many rounds to play
