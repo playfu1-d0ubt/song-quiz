@@ -1,5 +1,6 @@
 """Tests for song_quiz.py."""
 
+import song_quiz
 from song_quiz import (
     encode_password,
     get_choice,
@@ -83,3 +84,26 @@ def test_get_choice_asks_again_after_an_invalid_answer(monkeypatch):
     monkeypatch.setattr("builtins.input", lambda prompt: next(answers))
 
     assert get_choice(":", ["1", "2", "-1"]) == "-1"
+
+
+def test_leaderboard_says_when_there_are_no_scores(tmp_path, monkeypatch, capsys):
+    """With no score file yet, the leaderboard says so."""
+    monkeypatch.setattr(song_quiz, "SCORE_FILE", str(tmp_path / "Score.txt"))
+
+    song_quiz.leaderboard()
+
+    assert "No scores yet." in capsys.readouterr().out
+
+
+def test_leaderboard_lists_the_highest_score_first(tmp_path, monkeypatch, capsys):
+    """The leaderboard lists the highest score first."""
+    monkeypatch.setattr(song_quiz, "SCORE_FILE", str(tmp_path / "Score.txt"))
+    tmp_path.joinpath("Score.txt").write_text("Alice:8:80\nBob:9:90\nCharlie:7:70")
+
+    song_quiz.leaderboard()
+
+    output = capsys.readouterr().out
+    lines = output.splitlines()
+    assert lines[-3] == "1. Bob - 9 points (90%)"
+    assert lines[-2] == "2. Alice - 8 points (80%)"
+    assert lines[-1] == "3. Charlie - 7 points (70%)"
