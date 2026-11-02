@@ -1,4 +1,12 @@
-from song_quiz import encode_password, hint, read_lines, verify_password
+"""Tests for song_quiz.py."""
+
+from song_quiz import (
+    encode_password,
+    get_choice,
+    hint,
+    read_lines,
+    verify_password,
+)
 
 
 def test_hint_keeps_punctuation_and_hides_letters():
@@ -60,3 +68,18 @@ def test_read_lines_skips_blank_lines_and_strips_spaces(tmp_path):
     test_file.write_text("  a  \n\n  b  \n  c  ")
 
     assert read_lines(test_file) == ["a", "b", "c"]
+
+
+def test_get_choice_returns_a_valid_answer(monkeypatch):
+    """A valid answer is returned straight away."""
+    monkeypatch.setattr("builtins.input", lambda prompt: "1")
+
+    assert get_choice(":", ["1", "2", "-1"]) == "1"
+
+
+def test_get_choice_asks_again_after_an_invalid_answer(monkeypatch):
+    """An invalid answer is ignored and the user is asked again."""
+    answers = iter(["A", "-1"])
+    monkeypatch.setattr("builtins.input", lambda prompt: next(answers))
+
+    assert get_choice(":", ["1", "2", "-1"]) == "-1"
