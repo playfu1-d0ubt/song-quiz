@@ -26,3 +26,15 @@ def test_verify_password_rejects_an_empty_stored_password():
     stored = ""
 
     assert verify_password("secret123", stored) is False
+
+def test_verify_password_accepts_an_old_plain_text_password():
+    """A stored value with no colon is treated as a plain-text password."""
+    assert verify_password("hello", "hello") is True
+
+def test_verify_password_rejects_the_wrong_old_plain_text_password():
+    """A stored value with no colon is treated as a plain-text password."""
+    assert verify_password("hello", "goodbye") is False
+
+def test_verify_password_rejects_a_damaged_hash():
+    """A stored value with a colon but no salt is treated as a damaged hash."""
+    assert verify_password("hello", "zzzz:abcd") is False
