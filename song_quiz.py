@@ -5,6 +5,7 @@ then tidied up and bug-fixed. Songs live in Quiz.txt (song:artist),
 players in users.txt (name:username:password) and results in
 Score.txt (name:score:percent).
 """
+
 import hashlib
 import os
 import random
@@ -13,6 +14,7 @@ USERS_FILE = "users.txt"
 QUIZ_FILE = "Quiz.txt"
 SCORE_FILE = "Score.txt"
 MAX_ROUNDS = 10
+
 
 def encode_password(password):
     """Return a hashed version of the password, including its salt."""
@@ -37,8 +39,11 @@ def verify_password(password, stored_password):
     except ValueError:
         return False
 
-    expected_hash = hashlib.scrypt(password.encode(), salt=salt, n=16384, r=8, p=1).hex()
+    expected_hash = hashlib.scrypt(
+        password.encode(), salt=salt, n=16384, r=8, p=1
+    ).hex()
     return expected_hash == hash_hex
+
 
 def read_lines(filename):
     """Return the non-empty lines of a file, or [] if it doesn't exist yet."""
@@ -59,6 +64,7 @@ def get_choice(prompt, allowed):
 
 
 def login_menu():
+    """Show the login menu until the player chooses to exit."""
     while True:
         print("\n1 for New user, 2 for Existing user, -1 to exit")
         choice = get_choice(":", ["1", "2", "-1"])
@@ -74,6 +80,7 @@ def login_menu():
 
 
 def main_menu(name):
+    """Show the quiz and leaderboard menu for a logged-in player."""
     while True:
         print(f"\nCurrent user: {name}")
         print("1 for Quiz, 2 for Leaderboard, -1 to logout")
@@ -88,6 +95,7 @@ def main_menu(name):
 
 
 def new_login():
+    """Ask for a name, age and password, then save a new account."""
     name = input("What's your name: ").strip()
     while not name.isalpha():
         print("Invalid - letters only")
@@ -140,6 +148,7 @@ def hint(title):
 
 
 def quiz(name):
+    """Play one game, save the player's score and show the leaderboard."""
     songs = []
     for line in read_lines(QUIZ_FILE):
         song_name, artist_name = line.rsplit(":", 1)
@@ -174,6 +183,7 @@ def quiz(name):
 
 
 def leaderboard():
+    """Print the top 10 scores, highest first."""
     scores = []
     for line in read_lines(SCORE_FILE):
         name, score, percent = line.split(":")
