@@ -5,9 +5,9 @@ then tidied up and bug-fixed. Songs live in Quiz.txt (song:artist),
 players in users.txt (name:username:password) and results in
 Score.txt (name:score:percent).
 """
-import random
-import os
 import hashlib
+import os
+import random
 
 USERS_FILE = "users.txt"
 QUIZ_FILE = "Quiz.txt"
@@ -38,10 +38,7 @@ def verify_password(password, stored_password):
         return False
 
     expected_hash = hashlib.scrypt(password.encode(), salt=salt, n=16384, r=8, p=1).hex()
-    if expected_hash == hash_hex:
-        return True
-    else:
-        return False
+    return expected_hash == hash_hex
 
 def read_lines(filename):
     """Return the non-empty lines of a file, or [] if it doesn't exist yet."""
